@@ -1,0 +1,48 @@
+/* frontend/src/styles/variables.css */
+:root {
+  /* Nigerian Green & White Theme Colors */
+  --color-primary: #008751;
+  --color-primary-light: #00A860;
+  --color-primary-dark: #006B3F;
+  --color-primary-lighter: #E8F5E9;
+  
+  --color-white: #FFFFFF;
+  --color-background: #F5F5F5;
+  --color-surface: #FFFFFF;
+  
+  --color-accent-green: #4CAF50;
+  --color-accent-mint: #00C853;
+  --color-accent-emerald: #00796B;
+  
+  --color-status-active: #4CAF50;
+  --color-status-gossiping: #00C853;
+  --color-status-offline: #9E9E9E;
+  --color-status-warning: #FF9800;
+  
+  --color-text-primary: #212121;
+  --color-text-secondary: #757575;
+  --color-text-muted: #BDBDBD;
+  
+  --color-border: #E0E0E0;
+  --color-border-hover: #BDBDBD;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-green: 0 4px 14px rgba(0, 135, 81, 0.25);
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+}

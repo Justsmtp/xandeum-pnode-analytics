@@ -1,0 +1,62 @@
+/* ==========================================
+   STATUS BADGE STYLES
+   ========================================== */
+
+/* frontend/src/components/pnodes/StatusBadge.css */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.status-active {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-active .status-dot {
+  background: #4CAF50;
+}
+
+.status-gossiping {
+  background: #E0F2F1;
+  color: #00695C;
+}
+
+.status-gossiping .status-dot {
+  background: #00C853;
+}
+
+.status-offline {
+  background: #F5F5F5;
+  color: #616161;
+}
+
+.status-offline .status-dot {
+  background: #9E9E9E;
+}
+
+.status-unknown {
+  background: #FAFAFA;
+  color: #9E9E9E;
+}
+
+.status-unknown .status-dot {
+  background: #BDBDBD;
+}

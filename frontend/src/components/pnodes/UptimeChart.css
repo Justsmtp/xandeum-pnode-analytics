@@ -1,0 +1,54 @@
+/* frontend/src/components/pnodes/UptimeChart.css */
+.uptime-chart {
+  width: 100%;
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2rem;
+}
+
+.chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.chart-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chart-bar-label {
+  min-width: 100px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.chart-bar-wrapper {
+  flex: 1;
+  height: 40px;
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.chart-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent-green));
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  transition: width 0.5s ease;
+  border-radius: var(--radius-md);
+}
+
+.chart-bar-value {
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
