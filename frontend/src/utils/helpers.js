@@ -1,8 +1,5 @@
-//  frontend/src/utils/helpers.js
+// frontend/src/utils/helpers.js
 
-/**
- * Format bytes to human readable format
- */
 export const formatBytes = (bytes, decimals = 2) => {
   if (!bytes || bytes === 0) return '0 Bytes';
 
@@ -15,9 +12,6 @@ export const formatBytes = (bytes, decimals = 2) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
 
-/**
- * Format uptime in seconds to human readable format
- */
 export const formatUptime = (seconds) => {
   if (!seconds || seconds === 0) return '0s';
 
@@ -33,9 +27,6 @@ export const formatUptime = (seconds) => {
   return parts.join(' ') || '< 1m';
 };
 
-/**
- * Format date to relative time
- */
 export const formatRelativeTime = (date) => {
   const now = new Date();
   const diff = now - new Date(date);
@@ -50,17 +41,11 @@ export const formatRelativeTime = (date) => {
   return 'Just now';
 };
 
-/**
- * Calculate storage percentage
- */
 export const getStoragePercentage = (used, total) => {
   if (!total || total === 0) return 0;
   return ((used / total) * 100).toFixed(1);
 };
 
-/**
- * Get status color
- */
 export const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case 'active':
@@ -72,4 +57,37 @@ export const getStatusColor = (status) => {
     default:
       return '#BDBDBD';
   }
+};
+
+export const formatNumber = (num) => {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M`;
+  }
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`;
+  }
+  return num.toString();
+};
+
+export const calculateHealthScore = (activeNodes, totalNodes) => {
+  if (totalNodes === 0) return 0;
+  return ((activeNodes / totalNodes) * 100).toFixed(1);
+};
+
+export const getLatencyClass = (latency) => {
+  if (!latency) return 'unknown';
+  if (latency < 50) return 'excellent';
+  if (latency < 100) return 'good';
+  if (latency < 200) return 'fair';
+  return 'poor';
+};
+
+export const formatSOL = (amount) => {
+  return `${(amount / 1000000000).toFixed(2)} SOL`;
+};
+
+export const truncateAddress = (address, start = 6, end = 4) => {
+  if (!address) return '';
+  if (address.length <= start + end) return address;
+  return `${address.slice(0, start)}...${address.slice(-end)}`;
 };

@@ -1,0 +1,205 @@
+/* frontend/src/components/pnodes/NetworkHealth.css */
+
+.network-health {
+  padding: 2rem;
+  height: 100%;
+}
+
+.health-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.health-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.health-icon {
+  font-size: 1.5rem;
+}
+
+.health-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.health-badge.excellent {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.health-badge.good {
+  background: #F1F8E9;
+  color: #558B2F;
+}
+
+.health-badge.warning {
+  background: #FFF3E0;
+  color: #E65100;
+}
+
+.health-score-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.health-circle {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.health-circle-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.health-circle-progress {
+  transition: stroke-dasharray 1s ease;
+}
+
+.health-score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.health-percentage {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.health-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.health-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.health-metric {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--color-background);
+  border-radius: var(--radius-md);
+}
+
+.metric-icon-small {
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.metric-info {
+  flex: 1;
+}
+
+.metric-value-small {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.metric-label-small {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.health-status-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.status-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-bar-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.status-bar-value {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.status-bar-track {
+  height: 8px;
+  background: var(--color-background);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.status-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.status-bar-fill.success {
+  background: linear-gradient(90deg, #66BB6A, #4CAF50);
+}
+
+.status-bar-fill.info {
+  background: linear-gradient(90deg, #42A5F5, #2196F3);
+}
+
+.health-loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+  .health-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-circle {
+    width: 160px;
+    height: 160px;
+  }
+
+  .health-percentage {
+    font-size: 2.5rem;
+  }
+}

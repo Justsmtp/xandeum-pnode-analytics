@@ -1,0 +1,232 @@
+/* frontend/src/components/pnodes/RegionHeatmap.css */
+
+.region-heatmap {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.heatmap-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.heatmap-icon {
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.heatmap-legend {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+}
+
+.legend-color.heat-low {
+  background: linear-gradient(135deg, #E8F5E9, #C8E6C9);
+}
+
+.legend-color.heat-medium {
+  background: linear-gradient(135deg, #81C784, #66BB6A);
+}
+
+.legend-color.heat-high {
+  background: linear-gradient(135deg, #4CAF50, #43A047);
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.region-card {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.region-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.1;
+  z-index: 0;
+}
+
+.region-card.heat-low {
+  background: linear-gradient(135deg, #F1F8E9, #FFFFFF);
+  border-color: #C5E1A5;
+}
+
+.region-card.heat-low::before {
+  background: linear-gradient(135deg, #8BC34A, #7CB342);
+}
+
+.region-card.heat-medium {
+  background: linear-gradient(135deg, #E8F5E9, #FFFFFF);
+  border-color: #81C784;
+}
+
+.region-card.heat-medium::before {
+  background: linear-gradient(135deg, #66BB6A, #4CAF50);
+}
+
+.region-card.heat-high {
+  background: linear-gradient(135deg, #C8E6C9, #FFFFFF);
+  border-color: #4CAF50;
+}
+
+.region-card.heat-high::before {
+  background: linear-gradient(135deg, #43A047, #2E7D32);
+}
+
+.region-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.region-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.region-icon {
+  font-size: 2rem;
+}
+
+.region-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.region-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.region-stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.stat-value.success {
+  color: #4CAF50;
+}
+
+.stat-value.error {
+  color: #F44336;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.region-health {
+  position: relative;
+  z-index: 1;
+}
+
+.health-bar-container {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #66BB6A, #4CAF50);
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.health-score {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.heatmap-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-secondary);
+}
+
+.empty-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .heatmap-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heatmap-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .region-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+}

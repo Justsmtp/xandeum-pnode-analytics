@@ -1,5 +1,6 @@
 // frontend/src/services/api.js
 import axios from 'axios';
+import solanaService from './solanaService';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -63,5 +64,7 @@ export const pNodeAPI = {
     return response.data;
   },
 };
+
+export { solanaService };
 
 export default api;
