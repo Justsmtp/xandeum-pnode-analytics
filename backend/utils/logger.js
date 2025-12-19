@@ -1,4 +1,4 @@
-/ backend/utils/logger.js
+
 import chalk from 'chalk';
 
 class Logger {

@@ -7,7 +7,7 @@ export const PRPC_CONFIG = {
   },
   TIMEOUT: 30000,
   RETRY_ATTEMPTS: 3,
-  CACHE_TTL: 30000, // 30 seconds
+  CACHE_TTL: 30000,
 };
 
 export const NODE_STATUS = {
