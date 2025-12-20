@@ -5,84 +5,135 @@ import { logger } from '../utils/logger.js';
 
 const CACHE_KEY = 'all_pnodes';
 
+/**
+ * GET /api/pnodes
+ */
 export const getAllPNodes = async (req, res, next) => {
   try {
     const { refresh } = req.query;
 
-    // Check cache unless refresh requested
+    // 1️⃣ Serve from cache unless refresh requested
     if (!refresh) {
       const cached = cacheService.get(CACHE_KEY);
       if (cached) {
         return res.json({
           success: true,
           cached: true,
+          source: 'cache',
           ...cached,
         });
       }
     }
 
-    // Fetch from pRPC
-    const result = await pRPCService.getAllPNodes();
+    let result = null;
 
-    // Save to MongoDB (upsert)
-    if (result.success && result.data) {
-      await Promise.all(
-        result.data.map(node =>
-          PNode.findOneAndUpdate(
-            { nodeId: node.id },
-            {
-              nodeId: node.id,
-              gossipStatus: node.gossipStatus,
-              storage: node.storage,
-              location: node.location,
-              uptime: node.uptime,
-              version: node.version,
-              lastSeen: node.lastSeen,
-              metadata: node.metadata,
-            },
-            { upsert: true, new: true }
-          )
-        )
-      );
+    // 2️⃣ Try fetching from Xandeum pRPC
+    try {
+      result = await pRPCService.getAllPNodes();
+    } catch (error) {
+      if (error.code === 'ENOTFOUND') {
+        logger.warn(
+          '🌐 Xandeum API unreachable (DNS) — falling back to database'
+        );
+      } else {
+        logger.error(`❌ pRPC fetch failed: ${error.message}`);
+      }
     }
 
-    // Cache result
-    cacheService.set(CACHE_KEY, result);
+    // 3️⃣ If external fetch failed → fallback to DB
+    if (!result || !result.success || !Array.isArray(result.data)) {
+      const nodes = await PNode.find({});
 
-    res.json({
+      const fallbackResponse = {
+        success: true,
+        source: 'database',
+        data: nodes,
+        timestamp: new Date().toISOString(),
+      };
+
+      cacheService.set(CACHE_KEY, fallbackResponse);
+
+      return res.json({
+        cached: false,
+        ...fallbackResponse,
+      });
+    }
+
+    // 4️⃣ External fetch succeeded → upsert MongoDB
+    await Promise.all(
+      result.data.map(node =>
+        PNode.findOneAndUpdate(
+          { nodeId: node.id },
+          {
+            nodeId: node.id,
+            gossipStatus: node.gossipStatus,
+            storage: node.storage,
+            location: node.location,
+            uptime: node.uptime,
+            version: node.version,
+            lastSeen: node.lastSeen,
+            metadata: node.metadata,
+          },
+          { upsert: true, new: true }
+        )
+      )
+    );
+
+    const successResponse = {
       success: true,
+      source: 'external',
+      data: result.data,
+      timestamp: new Date().toISOString(),
+    };
+
+    // 5️⃣ Cache successful response
+    cacheService.set(CACHE_KEY, successResponse);
+
+    return res.json({
       cached: false,
-      ...result,
+      ...successResponse,
     });
   } catch (error) {
-    logger.error(`getAllPNodes error: ${error.message}`);
+    logger.error(`getAllPNodes fatal error: ${error.message}`);
     next(error);
   }
 };
 
+/**
+ * GET /api/pnodes/:id
+ */
 export const getPNodeById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    // Try cache first
     const cacheKey = `pnode_${id}`;
+
+    // 1️⃣ Cache first
     const cached = cacheService.get(cacheKey);
     if (cached) {
-      return res.json({ success: true, cached: true, ...cached });
+      return res.json({
+        success: true,
+        cached: true,
+        source: 'cache',
+        ...cached,
+      });
     }
 
-    // Try database
+    // 2️⃣ DB lookup
     let node = await PNode.findOne({ nodeId: id });
 
-    // If not in DB, fetch from pRPC
+    // 3️⃣ If not found → try pRPC
     if (!node) {
-      const result = await pRPCService.getPNodeById(id);
-      if (result.success) {
-        node = await PNode.findOneAndUpdate(
-          { nodeId: id },
-          { ...result.data, nodeId: id },
-          { upsert: true, new: true }
-        );
+      try {
+        const result = await pRPCService.getPNodeById(id);
+        if (result?.success && result.data) {
+          node = await PNode.findOneAndUpdate(
+            { nodeId: id },
+            { ...result.data, nodeId: id },
+            { upsert: true, new: true }
+          );
+        }
+      } catch (error) {
+        logger.warn(`pRPC getPNodeById failed: ${error.message}`);
       }
     }
 
@@ -95,19 +146,26 @@ export const getPNodeById = async (req, res, next) => {
 
     const response = {
       success: true,
+      source: 'database',
       data: node,
       timestamp: new Date().toISOString(),
     };
 
     cacheService.set(cacheKey, response);
 
-    res.json({ ...response, cached: false });
+    return res.json({
+      cached: false,
+      ...response,
+    });
   } catch (error) {
     logger.error(`getPNodeById error: ${error.message}`);
     next(error);
   }
 };
 
+/**
+ * GET /api/pnodes/stats
+ */
 export const getStatistics = async (req, res, next) => {
   try {
     const nodes = await PNode.find({});
@@ -127,24 +185,23 @@ export const getStatistics = async (req, res, next) => {
     };
 
     nodes.forEach(node => {
-      // Region stats
       const region = node.location?.region || 'Unknown';
       stats.byRegion[region] = (stats.byRegion[region] || 0) + 1;
 
-      // Storage stats
       stats.totalStorage.used += node.storage?.used || 0;
       stats.totalStorage.total += node.storage?.total || 0;
       stats.totalStorage.available += node.storage?.available || 0;
 
-      // Uptime
       stats.averageUptime += node.uptime || 0;
     });
 
     if (nodes.length > 0) {
-      stats.averageUptime = Math.floor(stats.averageUptime / nodes.length);
+      stats.averageUptime = Math.floor(
+        stats.averageUptime / nodes.length
+      );
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: stats,
       timestamp: new Date().toISOString(),

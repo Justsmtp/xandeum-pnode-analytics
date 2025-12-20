@@ -1,0 +1,105 @@
+/* frontend/src/components/charts/PieChart.css */
+
+.pie-chart-container {
+  width: 100%;
+}
+
+.pie-chart-content {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.pie-chart-svg {
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.pie-segment {
+  transition: all 0.3s;
+}
+
+.pie-segment:hover {
+  filter: brightness(1.1);
+}
+
+.pie-center-value {
+  font-size: 2rem;
+  font-weight: 800;
+  fill: #111827;
+}
+
+.pie-center-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  fill: #6B7280;
+}
+
+.pie-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.legend-item:hover {
+  background: #F9FAFB;
+}
+
+.legend-item.active {
+  background: #F0FDF4;
+  border: 1px solid #00C853;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.legend-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.legend-value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #00C853;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pie-chart-content {
+    flex-direction: column;
+  }
+
+  .pie-chart-svg {
+    width: 180px;
+    height: 180px;
+  }
+
+  .pie-legend {
+    width: 100%;
+  }
+}

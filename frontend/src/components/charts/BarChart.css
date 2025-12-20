@@ -1,0 +1,160 @@
+/* frontend/src/components/charts/BarChart.css */
+
+.bar-chart-container {
+  width: 100%;
+}
+
+.bar-chart-wrapper {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.bar-chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50px;
+}
+
+.y-axis-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.y-axis-label {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 600;
+  width: 40px;
+  text-align: right;
+}
+
+.y-axis-grid-line {
+  position: absolute;
+  left: 50px;
+  right: -1000px;
+  height: 1px;
+  background: #E5E7EB;
+  z-index: 0;
+}
+
+.bar-chart-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.bar-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 0.25rem;
+}
+
+.bar {
+  width: 100%;
+  max-width: 60px;
+  background: linear-gradient(180deg, #00C853, #00A843);
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.2);
+}
+
+.bar:hover {
+  background: linear-gradient(180deg, #00E676, #00C853);
+  box-shadow: 0 8px 24px rgba(0, 200, 83, 0.3);
+}
+
+.bar.hovered {
+  background: linear-gradient(180deg, #00E676, #00C853);
+}
+
+.bar-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1F2937;
+  color: #FFFFFF;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  animation: fadeIn 0.2s;
+}
+
+.bar-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1F2937;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.tooltip-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.125rem;
+}
+
+.tooltip-value {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.bar-x-label {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-weight: 600;
+  text-align: center;
+  max-width: 80px;
+  word-wrap: break-word;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bar-chart-wrapper {
+    height: 250px !important;
+  }
+
+  .bar {
+    max-width: 40px;
+  }
+
+  .bar-x-label {
+    font-size: 0.625rem;
+  }
+
+  .y-axis-label {
+    font-size: 0.625rem;
+  }
+}

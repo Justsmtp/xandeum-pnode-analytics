@@ -5,7 +5,7 @@ import './SearchBar.css';
 const SearchBar = ({ value, onChange, placeholder = 'Search pNodes...' }) => {
   return (
     <div className="search-bar">
-      <span className="search-icon">🔍</span>
+      <span className="search-icon"></span>
       <input
         type="text"
         className="search-input"
