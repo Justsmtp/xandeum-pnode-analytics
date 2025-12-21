@@ -1,12 +1,12 @@
 // frontend/src/services/api.js
 import axios from 'axios';
 
-// Use your live backend URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://xandeum-pnode-analytics-9aon.onrender.com/api';
+// Your live backend URL - Remove /api from base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://xandeum-pnode-analytics-9aon.onrender.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: 60000, // Increased timeout for Render cold starts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -15,7 +15,7 @@ const api = axios.create({
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    console.log(`📡 API Request: ${config.method.toUpperCase()} ${config.url}`);
+    console.log(`📡 API Request: ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {
@@ -24,7 +24,7 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor with better error handling
+// Response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log(`✅ API Response: ${response.status} - ${response.config.url}`);
@@ -32,14 +32,11 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      // Server responded with error
       console.error(`❌ API Response Error (${error.response.status}):`, error.response.data);
     } else if (error.request) {
-      // Request made but no response
-      console.error('❌ No response from server:', error.message);
+      console.error('❌ No response from server. Backend might be sleeping or unreachable:', error.message);
     } else {
-      // Request setup error
-      console.error('❌ API Request Setup Error:', error.message);
+      console.error('❌ Request setup error:', error.message);
     }
     return Promise.reject(error);
   }
@@ -53,13 +50,22 @@ export const pNodeAPI = {
    */
   getAllPNodes: async (refresh = false) => {
     try {
-      const response = await api.get('/pnodes', {
-        params: { refresh: refresh ? 'true' : undefined },
+      console.log('🔍 Fetching all pNodes...');
+      const response = await api.get('/api/pnodes', {
+        params: refresh ? { refresh: 'true' } : {},
       });
+      console.log('✅ pNodes fetched successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch pNodes:', error);
-      throw error;
+      console.error('❌ Failed to fetch pNodes:', error.message);
+      
+      // Return detailed error info
+      throw {
+        message: error.message,
+        status: error.response?.status,
+        details: error.response?.data || 'Network error - backend might be sleeping',
+        isNetworkError: !error.response,
+      };
     }
   },
 
@@ -69,11 +75,17 @@ export const pNodeAPI = {
    */
   getPNodeById: async (id) => {
     try {
-      const response = await api.get(`/pnodes/${id}`);
+      console.log(`🔍 Fetching pNode: ${id}`);
+      const response = await api.get(`/api/pnodes/${id}`);
       return response.data;
     } catch (error) {
-      console.error(`Failed to fetch pNode ${id}:`, error);
-      throw error;
+      console.error(`❌ Failed to fetch pNode ${id}:`, error.message);
+      throw {
+        message: error.message,
+        status: error.response?.status,
+        details: error.response?.data,
+        isNetworkError: !error.response,
+      };
     }
   },
 
@@ -82,42 +94,94 @@ export const pNodeAPI = {
    */
   getStatistics: async () => {
     try {
-      const response = await api.get('/pnodes/stats');
+      console.log('🔍 Fetching statistics...');
+      const response = await api.get('/api/pnodes/stats');
+      console.log('✅ Statistics fetched:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch statistics:', error);
-      throw error;
+      console.error('❌ Failed to fetch statistics:', error.message);
+      throw {
+        message: error.message,
+        status: error.response?.status,
+        details: error.response?.data,
+        isNetworkError: !error.response,
+      };
     }
   },
 
   /**
-   * Health check
+   * Health check - Note: health endpoint is at root, not /api
    */
   healthCheck: async () => {
     try {
-      // Note: health endpoint is at root level, not /api
-      const response = await axios.get('https://xandeum-pnode-analytics-9aon.onrender.com/health', {
+      console.log('🔍 Health check...');
+      const response = await axios.get(`${API_BASE_URL}/health`, {
         timeout: 10000
       });
+      console.log('✅ Health check passed:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Health check failed:', error);
-      throw error;
+      console.error('❌ Health check failed:', error.message);
+      throw {
+        message: error.message,
+        status: error.response?.status,
+        details: error.response?.data || 'Backend unreachable',
+        isNetworkError: !error.response,
+      };
     }
   },
-};
 
-// Helper function to check API availability
-export const checkAPIConnection = async () => {
-  try {
-    const health = await pNodeAPI.healthCheck();
-    console.log('✅ API Connection OK:', health);
-    return { connected: true, data: health };
-  } catch (error) {
-    console.error('❌ API Connection Failed:', error.message);
-    return { connected: false, error: error.message };
+  /**
+   * Wake up backend (for Render free tier)
+   */
+  wakeUp: async () => {
+    try {
+      console.log('⏰ Waking up backend...');
+      const response = await axios.get(`${API_BASE_URL}/health`, {
+        timeout: 90000 // 90 seconds for cold start
+      });
+      console.log('✅ Backend is awake');
+      return response.data;
+    } catch (error) {
+      console.error('❌ Failed to wake backend:', error.message);
+      throw error;
+    }
   }
 };
 
-// Export default api instance for custom requests
+// Helper function to check API availability with retry
+export const checkAPIConnection = async (retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`🔄 Connection attempt ${i + 1}/${retries}...`);
+      const health = await pNodeAPI.healthCheck();
+      console.log('✅ API Connection OK:', health);
+      return { 
+        connected: true, 
+        data: health,
+        attempt: i + 1
+      };
+    } catch (error) {
+      console.warn(`⚠️ Attempt ${i + 1} failed:`, error.message);
+      
+      if (i === retries - 1) {
+        // Last attempt failed
+        console.error('❌ All connection attempts failed');
+        return { 
+          connected: false, 
+          error: error.message,
+          isNetworkError: error.isNetworkError,
+          details: error.details
+        };
+      }
+      
+      // Wait before retry (exponential backoff)
+      const delay = Math.pow(2, i) * 1000;
+      console.log(`⏳ Waiting ${delay/1000}s before retry...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+};
+
+// Export default api instance
 export default api;
