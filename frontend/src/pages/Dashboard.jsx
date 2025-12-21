@@ -34,6 +34,9 @@ const Dashboard = () => {
   const [network, setNetwork] = useState('mainnet');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Check if using mock data
+  const isUsingMockData = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+
   // Get unique regions
   const regions = useMemo(() => {
     const regionSet = new Set();
@@ -135,7 +138,7 @@ const Dashboard = () => {
               className="filter-toggle-btn"
               onClick={() => setShowFilters(!showFilters)}
             >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h14M3 10h10M3 16h6"/>
               </svg>
               Filters
@@ -157,6 +160,29 @@ const Dashboard = () => {
           />
         )}
 
+        {/* API Status Notice - Only show if using mock data */}
+        {isUsingMockData && (
+          <div className="api-status-notice">
+            <div className="notice-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm1 15H9v-2h2v2zm0-4H9V5h2v6z"/>
+              </svg>
+            </div>
+            <div className="notice-content">
+              <strong>Development Mode</strong>
+              <p>Using realistic mock data. Xandeum pNode API is in development. Dashboard will automatically connect to real API when released.</p>
+            </div>
+            <a 
+              href="https://xandeum.network/docs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="notice-link"
+            >
+              Check API Status
+            </a>
+          </div>
+        )}
+
         {/* Connection Status Bar */}
         <div className={`connection-status ${connectionStatus || 'connected'}`}>
           <div className="status-indicator">
@@ -171,6 +197,12 @@ const Dashboard = () => {
             <span>Network: {network === 'mainnet' ? 'Mainnet' : 'Testnet'}</span>
             <span className="divider">|</span>
             <span>Last Update: {lastUpdated ? lastUpdated.toLocaleTimeString() : '--:--:--'}</span>
+            {isUsingMockData && (
+              <>
+                <span className="divider">|</span>
+                <span className="mock-indicator">Mock Data</span>
+              </>
+            )}
           </div>
           <button className="refresh-btn" onClick={refreshPNodes} disabled={loading}>
             <svg className={loading ? 'spinning' : ''} width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
