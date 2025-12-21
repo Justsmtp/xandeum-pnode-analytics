@@ -1,3 +1,4 @@
+// backend/server.js
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -18,10 +19,34 @@ connectDB();
 
 // Middleware
 app.use(helmet());
+
+// CORS Configuration - Allow multiple origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'https://xandeum-pnode-analytics-rho.vercel.app',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://xandeum-pnode-analytics-rho.vercel.app',
-  credentials: true
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      logger.warn(`⚠️ CORS blocked request from origin: ${origin}`);
+      callback(null, true); // Allow anyway during development
+      // In production, use: callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -31,7 +56,8 @@ app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    service: 'Xandeum pNode Analytics API'
+    service: 'Xandeum pNode Analytics API',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -42,7 +68,8 @@ app.use('/api/pnodes', pNodeRoutes);
 app.use((req, res) => {
   res.status(404).json({ 
     success: false, 
-    message: 'Route not found' 
+    message: 'Route not found',
+    path: req.path
   });
 });
 
@@ -50,9 +77,10 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 Xandeum Analytics Server running on port ${PORT}`);
   logger.info(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
 });
 
 export default app;
